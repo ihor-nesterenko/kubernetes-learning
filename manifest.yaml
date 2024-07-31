@@ -1,25 +1,45 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: nginx-pod
-  namespace: mynamespace
+  name: http-app
+  namespace: app
   labels:
-    app.kubernetes.io/name: nginx-pod
-    app.kubernetes.io/instance: nginx-pod-123456
+    app.kubernetes.io/name: http-app
+    app.kubernetes.io/instance: http-app-123456
     app.kubernetes.io/version: "0.0.1"
-    app.kubernetes.io/component: nginx
+    app.kubernetes.io/component: http-app
     app.kubernetes.io/part-of: application
     app.kubernetes.io/managed-by: manually
   annotations:
     imageregistry: "https://hub.docker.com/"
 
 spec:
+  securityContext:
+    runAsUser: 1001
   containers:
-    - name: mynginx
-      image: nginx:latest
+    - name: app
+      image: ihornesterenko/app:latest
       ports:
         - name: http
-          containerPort: 80
+          containerPort: 8080
+      livenessProbe:
+        httpGet:
+          path: /health
+          port: http
+        periodSeconds: 10
+#        default value is 3
+        failureThreshold: 3
+      startupProbe:
+        httpGet:
+          path: /startup
+          port: http
+        periodSeconds: 10
+        failureThreshold: 30
+      readinessProbe:
+        httpGet:
+          path: /health
+          port: 8080
+        periodSeconds: 5
       resources:
         requests:
           memory: "64Mi"
