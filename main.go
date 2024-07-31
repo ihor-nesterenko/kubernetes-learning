@@ -2,7 +2,6 @@ package main
 
 import (
 	"log/slog"
-	"math/rand/v2"
 	"net/http"
 	"os"
 	"time"
@@ -22,16 +21,16 @@ func main() {
 	logger.Info("Service starting...")
 	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		logger.Info("The kubelet is checking my liveness/readiness")
-		//fail randomly several times
-		i := rand.Int()
-		if i%2 == 0 && failed < 5 {
-			failed++
-			logger.Info("liveness probe failed")
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-
-		logger.Info("Service is healthy")
+		////fail randomly several times
+		//i := rand.Int()
+		//if i%2 == 0 && failed < 5 {
+		//	failed++
+		//	logger.Info("liveness probe failed")
+		//	w.WriteHeader(http.StatusInternalServerError)
+		//	return
+		//}
+		//
+		//logger.Info("Service is healthy")
 		w.WriteHeader(http.StatusOK)
 		w.Header().Add("Content-Type", "text/plain")
 		w.Write([]byte("Service is healthy"))

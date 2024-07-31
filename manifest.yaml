@@ -14,8 +14,23 @@ metadata:
     imageregistry: "https://hub.docker.com/"
 
 spec:
+  serviceAccountName: app
   securityContext:
     runAsUser: 1001
+  tolerations:
+    - key: "ssd"
+      operator: "Equal"
+      value: "true"
+      effect: "PreferNoSchedule"
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+          - matchExpressions:
+              - key: suitable-for
+                operator: In
+                values:
+                  - golang
   containers:
     - name: app
       image: ihornesterenko/app:latest
