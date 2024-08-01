@@ -1,2 +1,66 @@
 apiVersion: apps/v1
 kind: Deployment
+metadata:
+  name: http-app-deployment
+  labels:
+    app: http-app
+    new-label: custom-value
+
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: http-app
+  template:
+    metadata:
+      labels:
+        app: http-app
+    spec:
+      serviceAccountName: app
+      securityContext:
+        runAsUser: 1001
+      tolerations:
+        - key: "ssd"
+          operator: "Equal"
+          value: "true"
+          effect: "PreferNoSchedule"
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: suitable-for
+                    operator: In
+                    values:
+                      - golang
+      containers:
+        - name: app
+          image: ihornesterenko/app:latest
+          ports:
+            - name: http
+              containerPort: 8080
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            periodSeconds: 10
+            #        default value is 3
+            failureThreshold: 3
+          startupProbe:
+            httpGet:
+              path: /startup
+              port: http
+            periodSeconds: 5
+            failureThreshold: 30
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            periodSeconds: 5
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "200m"
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
