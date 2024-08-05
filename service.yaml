@@ -11,4 +11,3 @@ spec:
       name: http-exposed
       targetPort: http
       protocol: TCP
-
