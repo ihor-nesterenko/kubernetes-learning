@@ -31,7 +31,8 @@ func main() {
 	http.HandleFunc("/hello-there", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 		w.Header().Add("Content-Type", "text/plain")
-		w.Write([]byte("General Kenobi"))
+		val := os.Getenv("response")
+		w.Write([]byte(val))
 	})
 
 	//imitate long startup

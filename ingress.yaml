@@ -6,13 +6,17 @@ metadata:
     nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   ingressClassName: nginx
+  tls:
+    - hosts:
+        - example.com
+      secretName: my-tls-secret
   rules:
-    - http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: http-app-service
-                port:
-                  name: http-exposed
+  - http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: http-app-service
+            port:
+              name: http-exposed
